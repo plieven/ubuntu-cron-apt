@@ -99,9 +99,9 @@ dist-upgrade -y -o APT::Get::Show-Upgraded=true -o Dir::Etc::sourcelist=/etc/apt
 EOF
 
 # set random hour/minute for security updates (cron-apt)
-# random hour: 0-6, minute: 0-59
-HOUR=$[ ($RANDOM % 23) ]
-MINUTE=$[ ($RANDOM % 6) ]
+# random hour: 4-5, minute: 0-59
+HOUR=$[ ($RANDOM % 2 + 4) ]
+MINUTE=$[ ($RANDOM % 60) ]
 
 cat > /etc/cron.d/cron-apt << EOF
 # cron job for cron-apt package
