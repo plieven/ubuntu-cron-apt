@@ -30,6 +30,14 @@ fi
 echo "ubuntu-cron-apt v0.1 - (c) Mar/2015 by Peter Lieven <pl@kamp.de>"
 echo "----------------------------------------------------------------"
 echo
+
+UnattendedUpgradeInterval=0
+eval $(apt-config shell UnattendedUpgradeInterval APT::Periodic::Unattended-Upgrade)
+if [ $UnattendedUpgradeInterval -ne 0 ]; then
+ echo "APT::Periodic::Unattended-Upgrade is enabled, deconfigure first!"
+ exit 1
+fi
+
 echo "This script will:"
 echo " - purge any cron-apt config if present"
 echo " - overwrite /etc/apt/sources.list and /etc/apt/sources.list.d/security.list"
