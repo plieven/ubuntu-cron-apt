@@ -49,7 +49,7 @@ read -p 'Please specify an email to receive upgrade notifications (leave blank i
 
 if [ -n "$MAILTO" ]; then
  X=$(which mailx 2>/dev/null) 
- [ $? -ne 0 ] && echo && echo "This system cannot send email. Please make sure mailx from the mailutils package is installed." && echo 1
+ [ $? -ne 0 ] && echo && echo "This system cannot send email. Please make sure mailx from the mailutils package is installed." && exit 1
 fi
 
 echo Installing cron-apt...
