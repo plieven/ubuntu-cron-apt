@@ -47,6 +47,11 @@ read -p 'If you like to proceed type uppercase yes: ' X
 echo
 read -p 'Please specify an email to receive upgrade notifications (leave blank if none): ' MAILTO
 
+if [ -n "$MAILTO" ]; then
+ X=$(which mailx 2>/dev/null) 
+ [ $? -ne 0 ] && echo && echo "This system cannot send email. Please make sure mailx from the mailutils package is installed." && echo 1
+fi
+
 echo Installing cron-apt...
 
 X=$(dpkg -l cron-apt 2>/dev/null) 
@@ -69,8 +74,6 @@ deb http://mirror.kamp.de/ubuntu $DISTRIB_CODENAME-security main universe multiv
 EOF
 
 if [ -n "$MAILTO" ]; then
-X=$(dpkg -l mailutils 2>/dev/null) 
-[ $? -ne 0 ] && apt-get install -y mailutils
 cat <<EOF >/etc/cron-apt/config
 MAILON="upgrade"
 MAILTO="$MAILTO"
