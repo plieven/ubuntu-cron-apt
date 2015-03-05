@@ -114,11 +114,26 @@ EOF
 HOUR=$[ ($RANDOM % 2 + 4) ]
 MINUTE=$[ ($RANDOM % 60) ]
 
+CMDLINE="test -x /usr/sbin/cron-apt && /usr/sbin/cron-apt"
+
+if [ -e /usr/local/sbin/ubuntu-kernel-remove ]; then
+ CMDLINE="$CMDLINE && /usr/local/sbin/ubuntu-kernel-remove -a -s"
+fi
+
 cat > /etc/cron.d/cron-apt << EOF
 # cron job for cron-apt package
 # randomized time to prevent clients from accessing repo at the same time
-$MINUTE $HOUR * * * root test -x /usr/sbin/cron-apt && /usr/sbin/cron-apt
+$MINUTE $HOUR * * * root $CMDLINE
 EOF
+
+if [ ! -e /usr/local/sbin/ubuntu-kernel-remove ]; then
+ echo
+ echo "WARN: You might want to install a tool such as ubuntu-kernel-remove[1] that"
+ echo "      automatically removes old kernels from your system. Otherwise cron-apt"
+ echo "      will periodically download new kernels and fill up your /boot."
+ echo
+ echo "      [1] https://github.com/plieven/ubuntu-kernel-remove"
+fi
 
 echo 
 echo Done.
