@@ -60,17 +60,6 @@ if [ -n "$MAILTO" ]; then
  [ $? -ne 0 ] && echo && echo "This system cannot send email. Please make sure mailx from the mailutils package is installed." && exit 1
 fi
 
-echo Installing cron-apt...
-
-X=$(dpkg -l cron-apt 2>/dev/null) 
-[ $? -eq 0 ] && apt-get purge -y -o quiet=2 cron-apt 2>/dev/null
-
-if [ -e /etc/cron-apt ]; then
- rm -rf /etc/cron-apt
-fi
-
-apt-get install -y --no-install-recommends -o quiet=2 cron-apt
-
 cat <<EOF >/etc/apt/sources.list
 deb http://mirror.kamp.de/ubuntu $DISTRIB_CODENAME main universe multiverse restricted
 deb http://mirror.kamp.de/ubuntu $DISTRIB_CODENAME-updates main universe multiverse restricted
@@ -80,6 +69,18 @@ EOF
 cat <<EOF >/etc/apt/sources.list.d/security.list 
 deb http://mirror.kamp.de/ubuntu $DISTRIB_CODENAME-security main universe multiverse restricted
 EOF
+
+echo Installing cron-apt...
+
+X=$(dpkg -l cron-apt 2>/dev/null)
+[ $? -eq 0 ] && apt-get purge -y -o quiet=2 cron-apt 2>/dev/null
+
+if [ -e /etc/cron-apt ]; then
+ rm -rf /etc/cron-apt
+fi
+
+apt-get update
+apt-get install -y --no-install-recommends -o quiet=2 cron-apt
 
 if [ -n "$MAILTO" ]; then
 cat <<EOF >/etc/cron-apt/config
