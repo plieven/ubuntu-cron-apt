@@ -27,6 +27,11 @@ if [ $(id -u) -ne 0 ]; then
     exit 1
 fi
 
+if ! dpkg -s lsb-release > /dev/null 2>&1; then
+    echo "ERR: lsb-release not installed! Can't get codename"
+    exit 1
+fi
+
 echo "ubuntu-cron-apt v0.1 - (c) Mar/2015 by Peter Lieven <pl@kamp.de>"
 echo "----------------------------------------------------------------"
 echo ""
@@ -48,20 +53,8 @@ if [ "$X" != "YES" ]; then
     exit 1
 fi
 
-. /etc/lsb-release
-
-if [ -z "${DISTRIB_ID}" ]; then
-    echo "ERR: Could not determinate DISTRIB_ID!"
-    exit 1
-fi
-
-if [ "${DISTRIB_ID}" != "Ubuntu" ]; then
-    echo "ERR: This is not an Ubuntu system!" 
-    exit 1
-fi
-
-if [ -z "${DISTRIB_CODENAME}" ]; then
-    echo "ERR: Could not determinate DISTRIB_CODENAME!" 
+if [ "$(lsb_release -is)" != "Ubuntu" ] && [ "$(lsb_release -is)" != "Debian" ]; then
+    echo "ERR: This is not an Ubuntu or Debian system!"
     exit 1
 fi
 
@@ -76,13 +69,13 @@ if [ -n "${MAILTO}" ]; then
 fi
 
 cat << EOF > /etc/apt/sources.list
-deb http://mirror.kamp.de/ubuntu ${DISTRIB_CODENAME} main universe multiverse restricted
-deb http://mirror.kamp.de/ubuntu ${DISTRIB_CODENAME}-updates main universe multiverse restricted
-deb http://mirror.kamp.de/ubuntu ${DISTRIB_CODENAME}-backports main universe multiverse restricted
+deb http://mirror.kamp.de/ubuntu $(lsb_release -cs) main universe multiverse restricted
+deb http://mirror.kamp.de/ubuntu $(lsb_release -cs)-updates main universe multiverse restricted
+deb http://mirror.kamp.de/ubuntu $(lsb_release -cs)-backports main universe multiverse restricted
 EOF
 
-cat << EOF > /etc/apt/sources.list.d/security.list 
-deb http://mirror.kamp.de/ubuntu ${DISTRIB_CODENAME}-security main universe multiverse restricted
+cat << EOF > /etc/apt/sources.list.d/security.list
+deb http://mirror.kamp.de/ubuntu $(lsb_release -cs)-security main universe multiverse restricted
 EOF
 
 echo "Installing cron-apt..."
