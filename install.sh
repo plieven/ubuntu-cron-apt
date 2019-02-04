@@ -128,8 +128,8 @@ EOF
 
 # set random hour/minute for security updates (cron-apt)
 # random hour: 4-5, minute: 0-59
-HOUR=$[ ($RANDOM % 2 + 4) ]
-MINUTE=$[ ($RANDOM % 60) ]
+HOUR=$((RANDOM % 2 + 4))
+MINUTE=$((RANDOM % 60))
 
 CMDLINE="test -x /usr/sbin/cron-apt && /usr/sbin/cron-apt"
 
