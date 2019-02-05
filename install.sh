@@ -106,16 +106,7 @@ DEBUG="verbose"
 EOF
 fi
 
-cat << EOF > /etc/cron-apt/action.d/0-update
-    update --quiet=2
-EOF
-
-cat << EOF > /etc/cron-apt/action.d/3-download
-    autoclean --yes
-    dist-upgrade --download-only --yes --option APT::Get::Show-Upgraded=true
-EOF
-
-cat << EOF > /etc/cron-apt/action.d/5-download
+cat << EOF > /etc/cron-apt/action.d/5-install-security-updates
     dist-upgrade --yes --option APT::Get::Show-Upgraded=true --option Dir::Etc::sourcelist=/etc/apt/sources.list.d/security.list --option Dir::Etc::sourceparts=nonexistent --option DPkg::Options::=--force-confdef --option DPkg::Options::=--force-confold
 EOF
 
