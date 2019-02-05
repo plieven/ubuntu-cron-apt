@@ -39,7 +39,10 @@ if [ "${UnattendedUpgradeInterval}" -ne 0 ]; then
     exit 1
 fi
 
-if [ "$(lsb_release -is)" != "Ubuntu" ] && [ "$(lsb_release -is)" != "Debian" ]; then
+DISTRIBUTION="$(lsb_release -is | tr '[:upper:]' '[:lower:]')"
+CODENAME="$(lsb_release -cs)"
+
+if [ "${DISTRIBUTION}" != "ubuntu" ] && [ "${DISTRIBUTION}" != "debian" ]; then
     echo "ERR: This is not an Ubuntu or Debian system!"
     exit 1
 fi
@@ -68,15 +71,30 @@ if [ -n "${MAILTO}" ]; then
     fi
 fi
 
-cat << EOF > /etc/apt/sources.list
-deb http://mirror.kamp.de/ubuntu $(lsb_release -cs) main universe multiverse restricted
-deb http://mirror.kamp.de/ubuntu $(lsb_release -cs)-updates main universe multiverse restricted
-deb http://mirror.kamp.de/ubuntu $(lsb_release -cs)-backports main universe multiverse restricted
+if [ "${DISTRIBUTION}" = "ubuntu" ]; then
+    cat << EOF > /etc/apt/sources.list
+deb http://mirror.kamp.de/${DISTRIBUTION} ${CODENAME} main universe multiverse restricted
+deb http://mirror.kamp.de/${DISTRIBUTION} ${CODENAME}-updates main universe multiverse restricted
+deb http://mirror.kamp.de/${DISTRIBUTION} ${CODENAME}-backports main universe multiverse restricted
 EOF
 
-cat << EOF > /etc/apt/sources.list.d/security.list
-deb http://mirror.kamp.de/ubuntu $(lsb_release -cs)-security main universe multiverse restricted
+    cat << EOF > /etc/apt/sources.list.d/security.list
+deb http://mirror.kamp.de/${DISTRIBUTION} ${CODENAME}-security main universe multiverse restricted
 EOF
+elif [ "${DISTRIBUTION}" = "debian" ]; then
+    cat << EOF > /etc/apt/sources.list
+deb http://mirror.kamp.de/${DISTRIBUTION} ${CODENAME} main contrib non-free
+deb http://mirror.kamp.de/${DISTRIBUTION} ${CODENAME}-updates main contrib non-free
+deb http://mirror.kamp.de/${DISTRIBUTION} ${CODENAME}-backports main contrib non-free
+EOF
+
+    cat << EOF > /etc/apt/sources.list.d/security.list
+deb http://security.debian.org/${DISTRIBUTION}-security ${CODENAME}/updates main contrib non-free
+EOF
+else
+    echo "ERR: Invalid distribution \"${DISTRIBUTION}\""
+    exit 1
+fi
 
 echo "Installing cron-apt..."
 
