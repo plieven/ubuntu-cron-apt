@@ -138,12 +138,14 @@ CMDLINE="test -x /usr/sbin/cron-apt && /usr/sbin/cron-apt"
 if [ -e /usr/local/sbin/ubuntu-kernel-remove ]; then
     CMDLINE="${CMDLINE} && /usr/local/sbin/ubuntu-kernel-remove -a -s"
 else
-    echo ""
-    echo "WARN: You might want to install a tool such as ubuntu-kernel-remove[1] that"
-    echo "      automatically removes old kernels from your system. Otherwise cron-apt"
-    echo "      will periodically download new kernels and fill up your /boot."
-    echo ""
-    echo "      [1] https://github.com/plieven/ubuntu-kernel-remove"
+    if [ "${DISTRIBUTION}" != "debian" ]; then
+        echo ""
+        echo "WARN: You might want to install a tool such as ubuntu-kernel-remove[1] that"
+        echo "      automatically removes old kernels from your system. Otherwise cron-apt"
+        echo "      will periodically download new kernels and fill up your /boot."
+        echo ""
+        echo "      [1] https://github.com/plieven/ubuntu-kernel-remove"
+    fi
 fi
 
 cat << EOF > /etc/cron.d/cron-apt
