@@ -88,9 +88,12 @@ deb http://mirror.kamp.de/${DISTRIBUTION} ${CODENAME}-updates main contrib non-f
 deb http://mirror.kamp.de/${DISTRIBUTION} ${CODENAME}-backports main contrib non-free
 EOF
 
-    cat << EOF > /etc/apt/sources.list.d/security.list
-deb http://security.debian.org/${DISTRIBUTION}-security ${CODENAME}/updates main contrib non-free
-EOF
+    # See https://wiki.debian.org/NewInBullseye#Changes
+    if [ "${CODENAME}" = "buster" ] || [ "${CODENAME}" = "stretch" ] || [ "${CODENAME}" = "jessie" ]; then
+        echo "deb http://security.debian.org/${DISTRIBUTION}-security ${CODENAME}/updates main contrib non-free" > /etc/apt/sources.list.d/security.list
+    else
+        echo "deb http://security.debian.org/${DISTRIBUTION}-security ${CODENAME}-security main contrib non-free" > /etc/apt/sources.list.d/security.list
+    fi
 else
     echo "ERR: Invalid distribution \"${DISTRIBUTION}\""
     exit 1
